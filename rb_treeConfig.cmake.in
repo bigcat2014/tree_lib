@@ -1,0 +1,5 @@
+set(rb_tree_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+include("${rb_tree_DIR/export_rb_tree.cmake}")
+
+set(rb_tree_LIBRARIES rb_tree)
