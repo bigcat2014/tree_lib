@@ -7,16 +7,16 @@ namespace rb_tree
 {
 
 template<typename T>
-concept Hashable = requires(T a) {
-  std::hash<T>{}(a);
-};
-
-template<typename T>
-concept Eqable = requires(T a, T b) {
+concept EQable = requires(T a, T b) {
   { a == b } -> std::convertible_to<bool>;
 };
 
+template<typename T>
+concept LTable = requires(T a, T b) {
+  { a < b } -> std::convertible_to<bool>;
+};
+
 template <typename T>
-concept Graphable = Hashable<T> && Eqable<T>;
+concept Treeable = EQable<T> && LTable<T>;
 
 } // namespace rb_tree
