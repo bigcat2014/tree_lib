@@ -82,10 +82,12 @@ protected:
     {
       curr_node = node;
       std::shared_ptr<Node<T>> prev_node = node->parent;
+      // If we are already in a right subtree, move up the tree
       while (prev_node != nullptr && curr_node == prev_node->right) {
         curr_node = prev_node;
         prev_node = prev_node->parent;
       }
+      // If the previous node visited was not our right subtree, then visit the previous node
       if (curr_node->right != prev_node)
       {
         curr_node = prev_node;
@@ -112,6 +114,87 @@ protected:
     std::swap(*node1, *node2);
   }
 
+  std::shared_ptr<Node<T>>& leftRotation(std::shared_ptr<Node<T>>& node)
+  {
+    std::shared_ptr<Node<T>>& right = node->right;
+    std::shared_ptr<Node<T>>& right_left = right->left;
+    right->left = node;
+    node->right = right_left;
+    node->parent = right;
+    if (right_left != nullptr) { right_left->parent = node; }
+    return right;
+  }
+
+  std::shared_ptr<Node<T>>& rightRotation(std::shared_ptr<Node<T>>& node)
+  {
+    std::shared_ptr<Node<T>>& left = node->left;
+    std::shared_ptr<Node<T>>& left_right = left->right;
+    left->right = node;
+    node->left = left_right;
+    node->parent = left;
+    if (left_right != nullptr) { left_right->parent = node; }
+    return left;
+  }
+
+  void rebalance(std::shared_ptr<Node<T>>& node)
+  {
+    std::shared_ptr<Node<T>>& parent = node->parent;
+
+    // Root node colored black
+    if (parent == nullptr) { node->color = COLOR::BLACK; return; }
+
+    // If parent is black, don't recolor
+    if (parent->color == COLOR::BLACK) { return; }
+
+    std::shared_ptr<Node<T>>& grandparent = parent->parent;
+    std::shared_ptr<Node<T>>& uncle = parent == grandparent->right ? grandparent->left : grandparent->right;
+
+    // If parent is red, check uncle node
+    if (uncle != nullptr && uncle->color == COLOR::RED)
+    {
+      parent->color = COLOR::BLACK;
+      uncle->color = COLOR::BLACK;
+      grandparent->color = COLOR::RED;
+      rebalance(grandparent);
+    }
+    // Uncle is black, rotate and recolor
+    else
+    {
+      // LL
+      if (grandparent->left == parent && parent->left == node)
+      {
+        node = leftRotation(node);
+        node->color = COLOR::BLACK;
+        node->left->color = COLOR::RED;
+      }
+      // LR
+      else if (grandparent->left == parent && parent->right == node)
+      {
+        node->left = leftRotation(node->left);
+        node->left->parent = node;
+        node = rightRotation(node);
+        node->color = COLOR::BLACK;
+        node->right->color = COLOR::RED;
+      }
+      // RR
+      else if (grandparent->right == parent && parent->right == node)
+      {
+        node = rightRotation(node);
+        node->color = COLOR::BLACK;
+        node->right->color = COLOR::RED;
+      }
+      // RL
+      else if (grandparent->right == parent && parent->left == node)
+      {
+        node->right = rightRotation(node->right);
+        node->right->parent = node;
+        node = leftRotation(node);
+        node->color = COLOR::BLACK;
+        node->left->color = COLOR::RED;
+      }
+    }
+  }
+
   bool insert_(std::shared_ptr<Node<T>>& node, const T& value)
   {
     static std::shared_ptr<Node<T>> parent_node = nullptr;
@@ -120,6 +203,8 @@ protected:
     if (not node )
     {
       node = std::make_shared<Node<T>>(value, parent_node);
+      // Rebalance tree
+      rebalance(node);
       parent_node = nullptr;
       return true;
     }

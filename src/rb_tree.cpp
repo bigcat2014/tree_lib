@@ -52,43 +52,50 @@ int main(int argc, char const *argv[])
   // std::cout << n1.right->data << std::endl;
 
   rb_tree::Tree<int> tree1;
-  tree1.insert(2);
-  tree1.insert(1);
-  tree1.insert(5);
-  tree1.insert(4);
-  tree1.insert(6);
   tree1.insert(3);
-  tree1.insert(7);
-  printPreorder<int>(tree1, 1);
-  printInorder<int>(tree1, 1);
-  printPostorder<int>(tree1, 1);
-  
-  tree1.remove(2);
-  printPreorder<int>(tree1, 2);
-  printInorder<int>(tree1, 2);
-  printPostorder<int>(tree1, 2);
-  
-  tree1.remove(1);
-  printPreorder<int>(tree1, 3);
-  printInorder<int>(tree1, 3);
-  printPostorder<int>(tree1, 3);
-  
-  tree1.remove(4);
-  printPreorder<int>(tree1, 4);
-  printInorder<int>(tree1, 4);
-  printPostorder<int>(tree1, 4);
-  
-  tree1.remove(6);
-  printPreorder<int>(tree1, 5);
-  printInorder<int>(tree1, 5);
-  printPostorder<int>(tree1, 5);
-  
-  tree1.remove(5);
-  printPreorder<int>(tree1, 6);
-  printInorder<int>(tree1, 6);
-  printPostorder<int>(tree1, 6);
+  printPreorder(tree1, 1);
+  tree1.insert(21);
+  printPreorder(tree1, 2);
+  tree1.insert(32);
+  printPreorder(tree1, 3);
+  tree1.insert(15);
+  printPreorder(tree1, 4);
 
+  // tree1.insert(2);
+  // tree1.insert(1);
+  // tree1.insert(5);
+  // tree1.insert(4);
+  // tree1.insert(6);
+  // tree1.insert(3);
+  // tree1.insert(7);
+  // printPreorder<int>(tree1, 1);
+  // printInorder<int>(tree1, 1);
+  // printPostorder<int>(tree1, 1);
+  
+  // tree1.remove(2);
+  // printPreorder<int>(tree1, 2);
+  // printInorder<int>(tree1, 2);
+  // printPostorder<int>(tree1, 2);
+  
+  // tree1.remove(1);
+  // printPreorder<int>(tree1, 3);
   // printInorder<int>(tree1, 3);
+  // printPostorder<int>(tree1, 3);
+  
+  // tree1.remove(4);
+  // printPreorder<int>(tree1, 4);
+  // printInorder<int>(tree1, 4);
+  // printPostorder<int>(tree1, 4);
+  
+  // tree1.remove(6);
+  // printPreorder<int>(tree1, 5);
+  // printInorder<int>(tree1, 5);
+  // printPostorder<int>(tree1, 5);
+  
+  // tree1.remove(5);
+  // printPreorder<int>(tree1, 6);
+  // printInorder<int>(tree1, 6);
+  // printPostorder<int>(tree1, 6);
 
   return 0;
 }

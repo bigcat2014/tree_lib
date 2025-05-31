@@ -9,6 +9,12 @@
 namespace rb_tree
 {
 
+enum class COLOR
+{
+  RED = 0,
+  BLACK
+};
+
 template <typename T> requires Treeable<T>
 struct Node
 {
@@ -18,7 +24,8 @@ struct Node
     data(value),
     left(nullptr),
     right(nullptr),
-    parent(parent)
+    parent(parent),
+    color(COLOR::RED)
   {}
 
   //! \brief The value stored in the node.
@@ -32,6 +39,8 @@ struct Node
 
   //! \brief The parent of the current node.
   std::shared_ptr<Node<T>> parent;
+
+  COLOR color;
 
   // EQ operator
   inline        bool operator==(const Node<T>& rhs)               const { return data == rhs.data; }
