@@ -99,25 +99,17 @@ protected:
 
   void swapNodes(std::shared_ptr<Node<T>>& node1, std::shared_ptr<Node<T>>& node2)
   {
-    std::shared_ptr<Node<T>> tmp_left = node1->left;
-    std::shared_ptr<Node<T>> tmp_right = node1->right;
-    std::shared_ptr<Node<T>> tmp_parent = node1->parent;
-
-    node1->left = node2->left;
-    node1->right = node2->right;
-    node1->parent = node2->parent;
-
-    node2->left = tmp_left;
-    node2->right = tmp_right;
-    node2->parent = tmp_parent;
-
+    std::swap(node1->left, node2->left);
+    std::swap(node1->right, node2->right);
+    std::swap(node1->parent, node2->parent);
+    std::swap(node1->color, node2->color);
     std::swap(*node1, *node2);
   }
 
-  std::shared_ptr<Node<T>>& leftRotation(std::shared_ptr<Node<T>>& node)
+  std::shared_ptr<Node<T>> leftRotation(std::shared_ptr<Node<T>> node)
   {
-    std::shared_ptr<Node<T>>& right = node->right;
-    std::shared_ptr<Node<T>>& right_left = right->left;
+    std::shared_ptr<Node<T>> right = node->right;
+    std::shared_ptr<Node<T>> right_left = right->left;
     right->left = node;
     node->right = right_left;
     node->parent = right;
@@ -125,10 +117,10 @@ protected:
     return right;
   }
 
-  std::shared_ptr<Node<T>>& rightRotation(std::shared_ptr<Node<T>>& node)
+  std::shared_ptr<Node<T>> rightRotation(std::shared_ptr<Node<T>> node)
   {
-    std::shared_ptr<Node<T>>& left = node->left;
-    std::shared_ptr<Node<T>>& left_right = left->right;
+    std::shared_ptr<Node<T>> left = node->left;
+    std::shared_ptr<Node<T>> left_right = left->right;
     left->right = node;
     node->left = left_right;
     node->parent = left;
@@ -136,7 +128,7 @@ protected:
     return left;
   }
 
-  void rebalance(std::shared_ptr<Node<T>>& node)
+  void rebalance(std::shared_ptr<Node<T>> node)
   {
     std::shared_ptr<Node<T>>& parent = node->parent;
 
@@ -160,38 +152,89 @@ protected:
     // Uncle is black, rotate and recolor
     else
     {
-      // LL
-      if (grandparent->left == parent && parent->left == node)
+      if (grandparent->right == parent)
       {
-        node = leftRotation(node);
-        node->color = COLOR::BLACK;
-        node->left->color = COLOR::RED;
+        if (grandparent->left == nullptr || grandparent->left->color == COLOR::BLACK)
+        {
+          if (parent->left != nullptr && parent->left->color == COLOR::RED){
+            parent->right = rightRotation(parent->right);
+            parent->right->parent = parent;
+            parent = leftRotation(parent);
+            parent->color = COLOR::BLACK;
+            parent->left->color = COLOR::RED;
+          }
+          else if (parent->right != nullptr && parent->right->color == COLOR::RED)
+          {
+            parent = leftRotation(parent);
+            parent->color = COLOR::BLACK;
+            parent->left->color = COLOR::RED;
+          }
+        }
+        else
+        {
+          grandparent->left->color = COLOR::BLACK;
+          parent->color == COLOR::BLACK;
+          if (head_ != grandparent) { grandparent->color = COLOR::RED; }
+        }
       }
-      // LR
-      else if (grandparent->left == parent && parent->right == node)
+      else
       {
-        node->left = leftRotation(node->left);
-        node->left->parent = node;
-        node = rightRotation(node);
-        node->color = COLOR::BLACK;
-        node->right->color = COLOR::RED;
+        if (grandparent->right == nullptr || grandparent->right->color == COLOR::BLACK)
+        {
+          if (parent->left != nullptr && parent->left->color == COLOR::RED){
+            parent = rightRotation(parent);
+            parent->color = COLOR::BLACK;
+            parent->right->color = COLOR::RED;
+          }
+          else if (parent->right != nullptr && parent->right->color == COLOR::RED)
+          {
+            parent->left = leftRotation(parent->left);
+            parent->left->parent = parent;
+            parent = rightRotation(parent);
+            parent->color = COLOR::BLACK;
+            parent->right->color = COLOR::RED;
+          }
+        }
+        else
+        {
+          grandparent->right->color = COLOR::BLACK;
+          parent->color == COLOR::BLACK;
+          if (head_ != grandparent) { grandparent->color = COLOR::RED; }
+        }
       }
-      // RR
-      else if (grandparent->right == parent && parent->right == node)
-      {
-        node = rightRotation(node);
-        node->color = COLOR::BLACK;
-        node->right->color = COLOR::RED;
-      }
-      // RL
-      else if (grandparent->right == parent && parent->left == node)
-      {
-        node->right = rightRotation(node->right);
-        node->right->parent = node;
-        node = leftRotation(node);
-        node->color = COLOR::BLACK;
-        node->left->color = COLOR::RED;
-      }
+
+      // // LL
+      // if (grandparent->left == parent && parent->left == node)
+      // {
+      //   node = leftRotation(node);
+      //   node->color = COLOR::BLACK;
+      //   node->left->color = COLOR::RED;
+      // }
+      // // LR
+      // else if (grandparent->left == parent && parent->right == node)
+      // {
+      //   node->left = leftRotation(node->left);
+      //   node->left->parent = node;
+      //   node = rightRotation(node);
+      //   node->color = COLOR::BLACK;
+      //   node->right->color = COLOR::RED;
+      // }
+      // // RR
+      // else if (grandparent->right == parent && parent->right == node)
+      // {
+      //   node = rightRotation(node);
+      //   node->color = COLOR::BLACK;
+      //   node->right->color = COLOR::RED;
+      // }
+      // // RL
+      // else if (grandparent->right == parent && parent->left == node)
+      // {
+      //   node->right = rightRotation(node->right);
+      //   node->right->parent = node;
+      //   node = leftRotation(node);
+      //   node->color = COLOR::BLACK;
+      //   node->left->color = COLOR::RED;
+      // }
     }
   }
 
@@ -200,7 +243,7 @@ protected:
     static std::shared_ptr<Node<T>> parent_node = nullptr;
 
     // We've reached the insertion point
-    if (not node )
+    if (node == nullptr)
     {
       node = std::make_shared<Node<T>>(value, parent_node);
       // Rebalance tree
@@ -211,7 +254,9 @@ protected:
 
     // Node exists at current position, keep going
     parent_node = node;
-    return insert_(getSubtree(node, value), value);
+    bool ret = insert_(getSubtree(node, value), value);
+    rebalance(node);
+    return ret;
   }
 
   bool remove_(std::shared_ptr<Node<T>>& node, const T& value)
